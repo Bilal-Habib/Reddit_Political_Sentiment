@@ -1,5 +1,6 @@
 import requests
 from requests.auth import HTTPBasicAuth
+import pandas as pd
 
 # open config file
 text_file = open("api_config", "r")
@@ -37,3 +38,20 @@ headers['Authorization'] = f'bearer {TOKEN}'
 
 # while the token is valid (~2 hours) we just add headers=headers to our requests
 requests.get('https://oauth.reddit.com/api/v1/me', headers=headers)
+
+# make a request for the trending posts in /r/Python
+res = requests.get("https://oauth.reddit.com/r/python/top",
+                   headers=headers)
+
+df = pd.DataFrame()  # initialize dataframe
+
+# loop through each post retrieved from GET request
+for post in res.json()['data']['children']:
+    # append relevant data to dataframe
+    df = df.append({
+        'subreddit': post['data']['subreddit'],
+        'title': post['data']['title'],
+        'selftext': post['data']['selftext'],
+        'score': post['data']['score']
+    }, ignore_index=True)
+
