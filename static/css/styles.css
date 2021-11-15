@@ -27,8 +27,24 @@ h1 {
     display: inline
 }
 
-radio {
+.radio {
     display: inline;
+}
+
+#show-res-btn {
+  background-color: dodgerblue;
+  border: none;
+  color: white;
+  padding: 32px 16px;;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+}
+
+#show-res-btn:hover {
+  background-color: white;
+  color: white;
 }
 
 .div-color {

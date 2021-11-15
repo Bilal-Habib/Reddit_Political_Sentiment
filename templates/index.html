@@ -17,9 +17,21 @@
   <section class="container">
       <div id="options-div" class="div-color">
           <p>Search for Subreddit or User</p>
-          <input type="radio" name="suboruser" value="r/"/><label>Subreddit</label>
-          <input type="radio" name="suboruser" value="u/"/><label>Username</label>
-          <input type="text" placeholder="E.g. LearnPython">
+          <input type="radio" name="page" value="r/"/><label>Subreddit</label>
+          <input type="radio" name="page" value="u/"/><label>Username</label>
+          <input type="text" id="page-search" placeholder="E.g. LearnPython">
+
+          <p>Enter Number of Posts</p>
+          <input type="text" id="no-posts" placeholder="E.g. 3">
+
+          <p>Select Sort Type</p>
+          <input type="radio" name="sort" value="new"/><label>New</label>
+          <input type="radio" name="sort" value="hot"/><label>Hot</label>
+          <input type="radio" name="sort" value="top"/><label>Top</label>
+
+          <button id="show-res-btn" onclick="getComments()">
+              Click to show data
+          </button>
       </div>
       <div style=	"grid-column: span 3 / span 3; background-color: green; padding: 100px;" class="div-color"></div>
   </section>
