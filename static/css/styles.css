@@ -1,6 +1,6 @@
 body {
     font-family: "Lucinda Grande", "Lucinda Sans Unicode", Helvetica, Arial, Verdana, sans-serif;
-    color: white;
+    color: black;
 }
 
 h1 {
@@ -18,7 +18,7 @@ h1 {
 
 #options-div {
     grid-column: span 2 / span 2;
-    background-color: blue;
+    background-color: white;
     padding: 50px;
 }
 
@@ -40,10 +40,11 @@ h1 {
   text-decoration: none;
   display: inline-block;
   font-size: 16px;
+  border-radius: 12px;
 }
 
 #show-res-btn:hover {
-  background-color: white;
+  background-color: black;
   color: white;
 }
 
@@ -53,6 +54,32 @@ h1 {
     margin: 5px;
 }
 /*css above is for small ui (mobile screens)*/
+
+#table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+    font-family: Arial, Helvetica, sans-serif;
+    border-collapse: collapse;
+    width: 100%;
+  }
+
+#table td, #table th {
+    border: 1px solid #ddd;
+    padding: 8px;
+  }
+
+#table tr:nth-child(even){background-color: #f2f2f2;}
+
+#table tr:hover {background-color: #ddd;}
+
+#table th {
+  padding-top: 12px;
+  padding-bottom: 12px;
+  text-align: left;
+  background-color: dodgerblue;
+  color: white;
+}
 
 /*css below is for desktop ui (big screens)*/
 @media (min-width: 768px) {
