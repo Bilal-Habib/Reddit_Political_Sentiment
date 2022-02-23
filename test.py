@@ -1,6 +1,7 @@
 import reddit_connection as rc
 import re as regex
-
+import rsa
+import ast
 
 stop_words = ['i', 'me', 'my', 'myself', 'we', 'our', 'ours', 'ourselves',
               'you', "you're", 'your', 'yours',
@@ -55,12 +56,39 @@ stop_words = ['i', 'me', 'my', 'myself', 'we', 'our', 'ours', 'ourselves',
 # removed_url = url.sub(r"", comment)
 # print(removed_url)
 
-condition = False
-n = 170
-while not condition:
-    comments = rc.getSubredditComments('tories', n, 'top')
-    if len(comments) >= 2000:
-        print("right: ", n)
-        condition = True
-    else:
-        n += 1
+# condition = False
+# n = 170
+# while not condition:
+#     comments = rc.getSubredditComments('tories', n, 'top')
+#     if len(comments) >= 2000:
+#         print("right: ", n)
+#         condition = True
+#     else:
+#         n += 1
+
+
+def encryptName(username):
+    cipher_text = str(rsa.encrypt(username.encode(), public_key))
+    return cipher_text
+
+
+def decryptName(username):
+    decoded = ast.literal_eval(username)
+    plain_text = rsa.decrypt(decoded, private_key).decode()
+    return plain_text
+
+
+if __name__ == '__main__':
+    public_key, private_key = rsa.newkeys(512)
+    username = 'bilal'
+    encrypted_user = encryptName(username)
+    # decrypted = key.decrypt(ast.literal_eval(str(encrypted)))
+    # decrypted_user = decryptName(encrypted_user)
+    # print(encrypted_user)
+    # print(str(encrypted_user))
+    # print(encrypted_user == str(encrypted_user))
+    # print(type(encrypted_user), type(str(encrypted_user)))
+    # print(decrypted_user)
+    # exam = ast.literal_eval(encrypted_user)
+    decrypted_user = decryptName(encrypted_user)
+    print(decrypted_user)

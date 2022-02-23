@@ -4,7 +4,6 @@ import reddit_connection as rc
 import re as regex
 import toolz
 import numpy as np
-import tensorflow as tf
 from keras.models import Sequential
 from keras.layers import Dense, Embedding, GlobalAveragePooling1D, LSTM, Dropout
 from keras.preprocessing.text import Tokenizer
@@ -16,6 +15,20 @@ from random import shuffle
 # from sklearn.linear_model import LogisticRegression
 # from sklearn.metrics import confusion_matrix
 import pickle
+import rsa
+import app
+import ast
+
+
+def encryptName(username):
+    cipher_text = str(rsa.encrypt(username.encode(), app.public_key))
+    return cipher_text
+
+
+def decryptName(username):
+    decoded = ast.literal_eval(username)
+    plain_text = rsa.decrypt(decoded, app.private_key).decode()
+    return plain_text
 
 
 def generateTrainingData(no_left_posts, no_right_posts):
@@ -241,8 +254,9 @@ def finalPreprocessing(left_wing, right_wing):
     val_padded = pad_sequences(val_sequences, maxlen=max_length, padding="post", truncating="post")
 
     print("padded shape: ", training_padded.shape, val_padded.shape)
-    with open('tokenizer3', 'wb') as file:
-        pickle.dump(tokenizer, file)
+    # save tokenizer code
+    # with open('tokenizer3', 'wb') as file:
+    #     pickle.dump(tokenizer, file)
     return [num_unique_words, training_padded, training_labels, val_padded, testing_labels]
 
 
@@ -270,7 +284,7 @@ def createModel(left_wing, right_wing):
               validation_data=(np.asarray(val_padded), np.asarray(testing_labels)), verbose=2)
 
     # code to save model and tokenizer
-    model.save('model3')
+    # model.save('model3')
 
 
 # def naiveModel(left_wing, right_wing):
@@ -312,6 +326,7 @@ def predictComments(page_type, comments):
                 readable_sentiment = getReadableSentiment(sentiment_val)
                 # if user chooses subreddit, we need to add author name
                 if page_type == 'subredditPage':
+                    author_name = encryptName(author_name)
                     dataset.append([author_name, comment_text, readable_sentiment])
                 # if user chooses username, we already have the author name
                 elif page_type == 'usernamePage':
@@ -338,6 +353,9 @@ def getReadableSentiment(value):
 
 if __name__ == '__main__':
     pass
+    # pubkey, privkey = rsa.newkeys(512)
+    # print(pubkey)
+    # print(privkey)
     # comments = generateTrainingData(100, 100)
     # comments = generateTrainingData(100, 100)
     # raw comments
@@ -362,13 +380,23 @@ if __name__ == '__main__':
     # left_wing = []
     # right_wing = []
     #
-    with open('three_left.txt') as f:
-        left_wing = [line.rstrip('\n') for line in f]
 
-    with open('three_right.txt') as f:
-        right_wing = [line.rstrip('\n') for line in f]
 
-    print('no of left wing comments: ', len(left_wing))
-    print('no of right wing comments: ', len(right_wing))
-    createModel(left_wing, right_wing)
-    # print("raw: ", left_wing, right_wing)
+
+    # with open('three_left.txt') as f:
+    #     left_wing = [line.rstrip('\n') for line in f]
+    #
+    # with open('three_right.txt') as f:
+    #     right_wing = [line.rstrip('\n') for line in f]
+    #
+    # print('no of left wing comments: ', len(left_wing))
+    # print('no of right wing comments: ', len(right_wing))
+    # # createModel(left_wing, right_wing)
+    #
+    # filter_left = filterAllComments(left_wing)
+    # filter_right = filterAllComments(right_wing)
+    #
+    # left_counter = wordCounter(filter_left)
+    # right_counter = wordCounter(filter_right)
+    # print(left_counter)
+    # print(right_counter)

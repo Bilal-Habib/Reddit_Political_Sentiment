@@ -19,8 +19,9 @@
   <section class="container">
       <div id="options-div" class="div-color">
           <p>Search for Subreddit or User</p>
-          <input type="radio" name="page" id="subredditPage" value="subredditPage"/><label>Subreddit</label>
+          <input type="radio" name="page" id="subredditPage" value="subredditPage" checked/><label>Subreddit</label>
           <input type="radio" name="page" id="usernamePage" value="usernamePage"/><label>Username</label>
+          <br>
           <br>
           <input type="text" id="page-search" placeholder="E.g. LabourUK">
 
@@ -32,6 +33,11 @@
           <input type="radio" name="sort" value="hot"/><label>Hot</label>
           <input type="radio" name="sort" value="top"/><label>Top</label>
 
+          <p><label id="encrypt-label">Is The Username Encrypted?</label></p>
+          <input type="radio" name="encryption" id="encrypted" value="yes"/><label>Yes</label>
+          <input type="radio" name="encryption" id="notEncrypted" value="no" checked/><label>No</label>
+
+          <br>
           <br>
 
           <button id="show-res-btn" onclick="getComments()">

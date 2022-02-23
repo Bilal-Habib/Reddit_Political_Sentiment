@@ -7,8 +7,14 @@ function changes() {
     $('[name="page"]').on('change', function() {
         if ($(this).attr('id') == 'subredditPage') {
             $('#amount-label').text('Enter Number of Posts');
+            $("#encrypt-label").hide();
+            $("#encrypted").hide();
+            $("#notEncrypted").hide();
         } else {
             $('#amount-label').text('Enter Number of Comments');
+            $("#encrypt-label").show();
+            $("#encrypted").show();
+            $("#notEncrypted").show();
         }
     });
 }
@@ -18,12 +24,14 @@ function getUserInput() {
     let page_name = document.getElementById("page-search").value;
     let no_posts = document.getElementById("no-posts").value;
     let sort_type = document.querySelector('input[name="sort"]:checked').value;
+    let is_encrypted = document.querySelector('input[name="encryption"]:checked').value;
 
     let user_input = {
         'page_type': page_type,
         'page_name': page_name,
         'no_posts': parseInt(no_posts),
-        'sort_type': sort_type
+        'sort_type': sort_type,
+        'is_encrypted' : is_encrypted
     }
     return JSON.stringify(user_input)
 }

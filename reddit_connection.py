@@ -1,5 +1,6 @@
 import praw
 import numpy as np
+import ml_model
 
 # open config file
 text_file = open("api_config", "r")
@@ -25,17 +26,17 @@ reddit = praw.Reddit(
 
 def getSubredditPosts(page_name, no_posts, post_sort_type):
     subreddit = reddit.subreddit(page_name)
-    if post_sort_type == "new":
+    if post_sort_type == 'new':
         return subreddit.new(limit=no_posts)
-    elif post_sort_type == "hot":
+    elif post_sort_type == 'hot':
         return subreddit.hot(limit=no_posts)
-    elif post_sort_type == "top":
+    elif post_sort_type == 'top':
         return subreddit.top(limit=no_posts)
 
 
 # gets comments from posts from specified subreddit
 def getSubredditComments(page_name, no_posts, post_sort_type):
-    comment_sort_type = "top"
+    comment_sort_type = 'top'
     no_posts = int(no_posts)
     scraped_comments = []
     for post in getSubredditPosts(page_name, no_posts, post_sort_type):
@@ -48,7 +49,7 @@ def getSubredditComments(page_name, no_posts, post_sort_type):
 
 
 def getSubredditReplies(comments):
-    reply_sort_type = "top"
+    reply_sort_type = 'top'
     scraped_replies = []
     for comment in comments:
         comment.reply_sort = reply_sort_type
@@ -59,15 +60,17 @@ def getSubredditReplies(comments):
 
 
 # gets comments made by a user
-def getUserComments(reddit_username, no_comments, comment_sort_type):
+def getUserComments(is_encrypted, reddit_username, no_comments, comment_sort_type):
+    if is_encrypted == 'yes':
+        reddit_username = ml_model.decryptName(reddit_username)
     scraped_comments = []
-    if comment_sort_type == "new":
+    if comment_sort_type == 'new':
         for comment in reddit.redditor(reddit_username).comments.new(limit=no_comments):
             scraped_comments.append(comment)
-    elif comment_sort_type == "hot":
+    elif comment_sort_type == 'hot':
         for comment in reddit.redditor(reddit_username).comments.hot(limit=no_comments):
             scraped_comments.append(comment)
-    elif comment_sort_type == "top":
+    elif comment_sort_type == 'top':
         for comment in reddit.redditor(reddit_username).comments.top(limit=no_comments):
             scraped_comments.append(comment)
     return scraped_comments
@@ -75,9 +78,9 @@ def getUserComments(reddit_username, no_comments, comment_sort_type):
 
 if __name__ == '__main__':
     pass
-    comments = getUserComments('Leelum', 5, 'top')
-    for comment in comments:
-        print(comment.body)
+    # comments = getUserComments('Leelum', 5, 'top')
+    # for comment in comments:
+    #     print(comment.body)
     # comments = getSubredditComments('labouruk', 1, 'top')
     # for comment in comments:
     #     if comment.author:
