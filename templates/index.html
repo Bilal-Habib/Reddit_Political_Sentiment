@@ -9,15 +9,19 @@
     <meta name="description" content="A website that visualises political sentiment from Reddit">
 
     <link rel="stylesheet" href="../static/css/styles.css">
+
+    <script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script src="../static/js/scripts.js"></script>
 </head>
 
 <body>
-  <h1>Home</h1>
+  <h1>Political Sentiment Analysis on Reddit</h1>
 
   <section class="container">
+
       <div id="options-div" class="div-color">
+          <div id="chartContainer" style="height: 300px; width: 100%;"></div>
           <p>Search for Subreddit or User</p>
           <input type="radio" name="page" id="subredditPage" value="subredditPage" checked/><label>Subreddit</label>
           <input type="radio" name="page" id="usernamePage" value="usernamePage"/><label>Username</label>
@@ -34,21 +38,33 @@
           <input type="radio" name="sort" value="top"/><label>Top</label>
 
           <p><label id="encrypt-label">Is The Username Encrypted?</label></p>
-          <input type="radio" name="encryption" id="encrypted" value="yes"/><label>Yes</label>
-          <input type="radio" name="encryption" id="notEncrypted" value="no" checked/><label>No</label>
+
+          <input type="radio" id="encrypted" name="encryption" value="yes">
+          <label for="encrypted">Yes</label>
+
+          <input type="radio" id="notEncrypted" name="encryption" value="no">
+          <label for="notEncrypted">No</label>
 
           <br>
           <br>
 
-          <button id="show-res-btn" onclick="getComments()">
+          <button id="show-res-btn" onclick="showComments()">
               Click to view comments
           </button>
       </div>
 
-      <div id="table-div" style="grid-column: span 3 / span 3; background-color: white; padding: 0px;" class="div-color">
-        <table id="table"></table>
-    </div>
-  </section>
+      <div id="table-div" style="grid-column: span 4; background-color: white; padding: 0px;" class="div-color">
+          <label class="switch">
+             <input type="checkbox" id="togBtn">
+             <div class="slider round">
+                 <!-- When checkbox is turned on, we display the right-wing comments -->
+              <span class="right">Right-Wing</span>
+              <span class="left">Left-Wing</span>
+             </div>
+          </label>
+          <div id="loader" class="loader">Loading...</div>
+      </div>
 
+  </section>
 </body>
 </html>

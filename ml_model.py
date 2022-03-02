@@ -300,6 +300,8 @@ def createModel(left_wing, right_wing):
 
 # function that returns a list of data to be shown on website table
 def predictComments(page_type, comments):
+    left_wing_dataset = []
+    right_wing_dataset = []
     max_length = 500
     # load model
     model = keras.models.load_model('model3')
@@ -307,7 +309,7 @@ def predictComments(page_type, comments):
     with open('tokenizer3', 'rb') as file:
         tokenizer = pickle.load(file)
     # dataset stores all author, comment, sentiment value
-    dataset = []
+    # dataset = []
     for comment in comments:
         # only calculate sentiment value for comments where author exists and where comment is not empty
         if comment.author:
@@ -327,11 +329,17 @@ def predictComments(page_type, comments):
                 # if user chooses subreddit, we need to add author name
                 if page_type == 'subredditPage':
                     author_name = encryptName(author_name)
-                    dataset.append([author_name, comment_text, readable_sentiment])
-                # if user chooses username, we already have the author name
+                    if sentiment_val > 0.5:
+                        right_wing_dataset.append([readable_sentiment, comment_text, author_name])
+                    else:
+                        left_wing_dataset.append([readable_sentiment, comment_text, author_name])
+                # if user chooses username, we don't need the author name
                 elif page_type == 'usernamePage':
-                    dataset.append([comment_text, readable_sentiment])
-    return dataset
+                    if sentiment_val > 0.5:
+                        right_wing_dataset.append([readable_sentiment, comment_text])
+                    else:
+                        left_wing_dataset.append([readable_sentiment, comment_text])
+    return left_wing_dataset, right_wing_dataset
 
 
 # takes in sentiment value e.g 0.20
@@ -339,15 +347,16 @@ def predictComments(page_type, comments):
 def getReadableSentiment(value):
     threshold = 0.5
     unformatted_sentiment = (1 - value / threshold) * 100
-    left_wing = False
-    if value <= threshold:
-        left_wing = True
+    # left_wing = False
+    # if value <= threshold:
+    #     left_wing = True
     # round to 2 decimal places
     rounded_value = ("{:.0f}".format(abs(unformatted_sentiment)))
-    if left_wing:
-        readable_sentiment = str(rounded_value) + '% Left Wing'
-    else:
-        readable_sentiment = str(rounded_value) + '% Right Wing'
+    readable_sentiment = str(rounded_value) + '%'
+    # if left_wing:
+    #     readable_sentiment = str(rounded_value) + '% Left Wing'
+    # else:
+    #     readable_sentiment = str(rounded_value) + '% Right Wing'
     return readable_sentiment
 
 

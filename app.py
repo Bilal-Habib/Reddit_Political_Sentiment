@@ -3,9 +3,8 @@ import reddit_connection
 import ml_model
 import rsa
 
-
-public_key, private_key = rsa.newkeys(512)
 app = Flask(__name__)
+public_key, private_key = rsa.newkeys(512)
 
 
 @app.route('/')
@@ -28,15 +27,16 @@ def getUserInput():
     column_names = []
     # check if page type requested is a subreddit or a user
     if page_type == 'subredditPage':
-        column_names = ['Username', 'Comment', 'Sentiment Value']
+        column_names = ['Sentiment Value', 'Comment', 'Username']
         comments = reddit_connection.getSubredditComments(page_name, no_posts, post_sort_type)
     elif page_type == 'usernamePage':
-        column_names = ['Comment', 'Sentiment Value']
+        column_names = ['Sentiment Value', 'Comment']
         comments = reddit_connection.getUserComments(is_encrypted, page_name, no_posts, post_sort_type)
 
-    table_data = ml_model.predictComments(page_type, comments)
-
-    return {'connection': 'Successful', 'column_names': column_names, 'comments': table_data}
+    left_wing_dataset, right_wing_dataset = ml_model.predictComments(page_type, comments)
+    # comments = left_wing_dataset + right_wing_dataset
+    return {'connection': 'Successful', 'column_names': column_names,
+            'left_wing_dataset': left_wing_dataset, 'right_wing_dataset': right_wing_dataset}
 
 
 if __name__ == '__main__':

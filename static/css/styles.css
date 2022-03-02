@@ -1,25 +1,35 @@
 body {
     font-family: "Lucinda Grande", "Lucinda Sans Unicode", Helvetica, Arial, Verdana, sans-serif;
     color: black;
+    margin: 0px;
+    padding: 0px;
 }
 
 h1 {
     background-color: dodgerblue;
+    color: white;
+    font-weight: lighter;
     text-align: center;
     padding: 20px;
+    margin: 0px;
+}
+
+input[type=text] {
+    width: 100%;
 }
 
 .container {
     padding: 10px;
-    background-color: black;
     display:grid;
     grid-template-columns: repeat(5, 1fr);
+    max-width: 100%;
 }
 
 #options-div {
-    grid-column: span 2 / span 2;
+    grid-column: span 1;
     background-color: white;
     padding: 50px;
+    border: 1px solid #ddd;
 }
 
 #radio label {
@@ -53,33 +63,6 @@ h1 {
     padding: 10px;
     margin: 5px;
 }
-/*css above is for small ui (mobile screens)*/
-
-#table {
-    display: block;
-    overflow-x: auto;
-    white-space: nowrap;
-    font-family: Arial, Helvetica, sans-serif;
-    border-collapse: collapse;
-    width: 100%;
-  }
-
-#table td, #table th {
-    border: 1px solid #ddd;
-    padding: 8px;
-  }
-
-#table tr:nth-child(even){background-color: #f2f2f2;}
-
-#table tr:hover {background-color: #ddd;}
-
-#table th {
-  padding-top: 12px;
-  padding-bottom: 12px;
-  text-align: left;
-  background-color: dodgerblue;
-  color: white;
-}
 
 /*css below is for desktop ui (big screens)*/
 @media (min-width: 768px) {
@@ -87,10 +70,167 @@ h1 {
     .container {
         grid-template-columns: repeat(5, 1fr);
     }
- 
+
     .header-styling {
         font-size:5rem;
         color: red;
     }
 
 }
+
+/*css above is for small ui (mobile screens)*/
+
+/*------------------- Table CSS -----------------*/
+.table {
+    font-family: Arial, Helvetica, sans-serif;
+    width: 100%;
+    table-layout: fixed;
+  }
+
+.table td, .table th {
+    border: 1px solid #ddd;
+    padding: 8px;
+    word-wrap: break-word
+  }
+
+.table tr {
+    border-top: 0px;
+}
+
+.table tr:nth-child(even){background-color: #f2f2f2;}
+
+.table tr:hover {background-color: #ddd;}
+
+.table th {
+  padding-top: 12px;
+  padding-bottom: 12px;
+  text-align: left;
+  background-color: dodgerblue;
+  color: white;
+}
+/*------------------- Table CSS -----------------*/
+
+/*------------------- Loader/Spinner CSS -----------------*/
+.loader,
+.loader:after {
+  border-radius: 50%;
+  width: 10em;
+  height: 10em;
+}
+.loader {
+  margin: 25% 35%;
+  font-size: 10px;
+  position: relative;
+  text-indent: -9999em;
+  border-top: 1.1em solid rgba(60, 60, 60, 0.2);
+  border-right: 1.1em solid rgba(60, 60, 60, 0.2);
+  border-bottom: 1.1em solid rgba(60, 60, 60, 0.2);
+  border-left: 1.1em solid #000;
+  -webkit-transform: translateZ(0);
+  -ms-transform: translateZ(0);
+  transform: translateZ(0);
+  -webkit-animation: load8 1.1s infinite linear;
+  animation: load8 1.1s infinite linear;
+}
+@-webkit-keyframes load8 {
+  0% {
+    -webkit-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(360deg);
+    transform: rotate(360deg);
+  }
+}
+@keyframes load8 {
+  0% {
+    -webkit-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(360deg);
+    transform: rotate(360deg);
+  }
+}
+/*------------------- Loader/Spinner CSS -----------------*/
+
+
+/*------------------- Toggle Switch CSS -----------------*/
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 180px;
+  height: 34px;
+}
+
+.switch input {display:none;}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: blue;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 26px;
+  width: 26px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+input:checked + .slider {
+  background-color: red;
+}
+
+input:focus + .slider {
+  box-shadow: 0 0 1px #2196F3;
+}
+
+input:checked + .slider:before {
+  -webkit-transform: translateX(55px);
+  -ms-transform: translateX(55px);
+  transform: translateX(55px);
+}
+
+.right
+{
+  display: none;
+}
+
+.right, .left
+{
+  color: white;
+  position: absolute;
+  transform: translate(-50%,-50%);
+  top: 50%;
+  left: 50%;
+  font-size: 100%;
+  font-family: Verdana, sans-serif;
+}
+
+input:checked+ .slider .right
+{display: block;}
+
+input:checked + .slider .left
+{display: none;}
+
+/* Rounded sliders */
+.slider.round {
+  border-radius: 34px;
+}
+
+.slider.round:before {
+  border-radius: 50%;
+}
+/*------------------- Toggle Switch CSS -----------------*/
