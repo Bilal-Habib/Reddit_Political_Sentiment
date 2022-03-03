@@ -6,10 +6,6 @@ window.onload = function(){
 function changes() {
 //  when page loads or refreshes, hide these elements
     $("#loader").hide();
-    $("#encrypt-label").hide();
-    $("label[for=encrypted],#encrypted").hide();
-    $("label[for=notEncrypted],#notEncrypted").hide();
-    $("#notEncrypted").prop("checked", true);
     $("#top-radio").prop("checked", true);
     $(".switch").hide();
     $("#chartContainer").hide();
@@ -17,15 +13,8 @@ function changes() {
     $('[name="page"]').on('change', function() {
         if ($(this).attr('id') == 'subredditPage') {
             $('#amount-label').text('Enter Number of Posts');
-            $("#encrypt-label").hide();
-            $("label[for=encrypted],#encrypted").hide();
-            $("label[for=notEncrypted],#notEncrypted").hide();
         } else {
             $('#amount-label').text('Enter Number of Comments');
-            $("#encrypt-label").show();
-            $("#encrypted").show();
-            $("label[for=encrypted],#encrypted").show();
-            $("label[for=notEncrypted],#notEncrypted").show();
         }
     });
 }
@@ -54,7 +43,11 @@ function getUserInput() {
     let page_name = document.getElementById("page-search").value;
     let no_posts = document.getElementById("no-posts").value;
     let sort_type = document.querySelector('input[name="sort"]:checked').value;
-    let is_encrypted = document.querySelector('input[name="encryption"]:checked').value;
+    let is_encrypted = "no";
+    let first_two_chars = page_name.slice(0,2);
+    if (first_two_chars == "b'" || first_two_chars == 'b"') {
+        is_encrypted = "yes";
+    }
 
     let user_input = {
         'page_type': page_type,
