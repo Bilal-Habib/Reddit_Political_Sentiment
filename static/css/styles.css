@@ -172,7 +172,7 @@ input[type=text] {
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: blue;
+  background-color: dodgerblue;
   -webkit-transition: .4s;
   transition: .4s;
 }
@@ -198,9 +198,9 @@ input:focus + .slider {
 }
 
 input:checked + .slider:before {
-  -webkit-transform: translateX(55px);
-  -ms-transform: translateX(55px);
-  transform: translateX(55px);
+  -webkit-transform: translateX(145px);
+  -ms-transform: translateX(145px);
+  transform: translateX(145px);
 }
 
 .right

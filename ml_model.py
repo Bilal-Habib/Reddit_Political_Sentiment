@@ -342,17 +342,6 @@ def predictComments(page_type, comments):
     return left_wing_dataset, right_wing_dataset
 
 
-# takes in sentiment value e.g 0.20
-# converts 0.0 to '100% Left Wing'
-# def getReadableSentiment(value):
-#     threshold = 0.5
-#     unformatted_sentiment = (1 - value / threshold) * 100
-#     # round to 2 decimal places
-#     rounded_value = ("{:.0f}".format(abs(unformatted_sentiment)))
-#     readable_sentiment = str(rounded_value) + '%'
-#     return readable_sentiment
-
-
 if __name__ == '__main__':
     pass
     # pubkey, privkey = rsa.newkeys(512)

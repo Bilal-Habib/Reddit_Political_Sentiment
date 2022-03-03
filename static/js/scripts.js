@@ -10,6 +10,7 @@ function changes() {
     $("label[for=encrypted],#encrypted").hide();
     $("label[for=notEncrypted],#notEncrypted").hide();
     $("#notEncrypted").prop("checked", true);
+    $("#top-radio").prop("checked", true);
     $(".switch").hide();
     $("#chartContainer").hide();
 
@@ -66,9 +67,11 @@ function getUserInput() {
 }
 
 function showComments() {
+    console.log("Start");
     $(".switch").hide();
     removeAllTables();
     $("#loader").show();
+    console.log("loader shown");
     $.ajax({
         type: "POST",
         url: '/getuserinput',
@@ -80,6 +83,7 @@ function showComments() {
             if (success_data){
                 console.log(success_data)
                 processRedditData(success_data.column_names, success_data.left_wing_dataset, success_data.right_wing_dataset)
+                console.log("reddit data sent and receieved");
             } else {
                 console.log("Error, could not retrieve comments")
             }
@@ -88,6 +92,7 @@ function showComments() {
 }
 
 function processRedditData(column_names, left_comments, right_comments){
+    console.log("process reddit data");
     displayTable(column_names, left_comments, 'leftwing');
     displayTable(column_names, right_comments, 'rightwing');
     hideAllTables();
@@ -110,11 +115,6 @@ function hideAllTables() {
     $(".table").hide();
 }
 
-//function round(num) {
-//    var m = Number((Math.abs(num) * 100).toPrecision(15));
-//    return Math.round(m) / 100 * Math.sign(num);
-//}
-
 function round(value, precision) {
     var multiplier = Math.pow(10, precision || 0);
     return Math.round(value * multiplier) / multiplier;
@@ -122,15 +122,16 @@ function round(value, precision) {
 
 function getReadableSentiment(value) {
     let threshold = 0.5;
-    let rounded_value = round(((1 - value / threshold) * 100), 2);
+    let formatted_val = Math.abs((1 - value / threshold) * 100);
+    let rounded_value = round(formatted_val);
     let readable_sentiment = rounded_value.toString() + "%";
     return readable_sentiment;
 }
 
 function displayTable(column_names, comments, sentiment) {
     $("#loader").hide();
+    $("#togBtn").prop('checked', false);
     $(".switch").show();
-//  TODO: WRITE CODE TO RESET TOGGLE SWITCH TO BE OFF/SHOW LEFT WING COMMENTS
     $("#chartContainer").show();
     addTable();
     let table = document.getElementById('table');
@@ -224,6 +225,8 @@ function displayLineChart(left, right) {
         data: {
             'Sentiment': x,
             'Count': y,
+            'Name': names,
+            'Comment': comments
         }
     });
 
@@ -252,6 +255,27 @@ function displayLineChart(left, right) {
     });
     plot.add_glyph(line, source);
 
+    // add hover tool for more interactiveness
+    var tooltip = (
+        "<div> <h3> <strong> Sentiment Value: @Sentiment </strong> <h3> </div>" +
+        "<div> <strong> Count: </strong>@Count </div>" +
+        "<div> <strong> Sample Comments: </strong> <marquee behavior=\"scroll\" direction=\"left\">@Comment</marquee></div>"
+    );
+    var hover = new Bokeh.HoverTool({
+        tooltips: tooltip
+    });
+    plot.add_tools(hover);
+
+    // add extra tools
+//    plot.add_tools(new Bokeh.BoxZoomTool());
+    plot.add_tools(new Bokeh.ResetTool());
+    plot.add_tools(new Bokeh.PanTool());
+    plot.add_tools(new Bokeh.ZoomInTool());
+    plot.add_tools(new Bokeh.ZoomOutTool());
+    plot.add_tools(new Bokeh.SaveTool());
+    plot.toolbar_location = "right";
+
+    // show plot
     Bokeh.Plotting.show(plot);
 
     console.log("Line Chart Rendered Successfully!")

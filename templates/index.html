@@ -30,35 +30,37 @@
 
       <div id="options-div" class="div-color">
           <div id="chartContainer" style="height: 300px; width: 100%;"></div>
-          <p>Search for Subreddit or User</p>
-          <input type="radio" name="page" id="subredditPage" value="r/" checked/><label>Subreddit</label>
-          <input type="radio" name="page" id="usernamePage" value="u/"/><label>Username</label>
-          <br>
-          <br>
-          <input type="text" id="page-search" placeholder="E.g. LabourUK">
+          <form onsubmit="showComments(event.preventDefault())">
+              <p>Search for Subreddit or User</p>
+              <input type="radio" name="page" id="subredditPage" value="r/" checked/><label>Subreddit</label>
+              <input type="radio" name="page" id="usernamePage" value="u/"/><label>Username</label>
+              <br>
+              <br>
+              <input type="text" id="page-search" placeholder="E.g. LabourUK" required>
 
-          <p><label id="amount-label">Enter Number of Posts</label></p>
-          <input type="text" id="no-posts" placeholder="E.g. 3">
+              <p><label id="amount-label">Enter Number of Posts</label></p>
+              <input type="text" id="no-posts" placeholder="E.g. 3" required>
 
-          <p>Select Sort Type</p>
-          <input type="radio" name="sort" value="new"/><label>New</label>
-          <input type="radio" name="sort" value="hot"/><label>Hot</label>
-          <input type="radio" name="sort" value="top"/><label>Top</label>
+              <p>Select Sort Type</p>
+              <input type="radio" name="sort" value="new"/><label>New</label>
+              <input type="radio" name="sort" value="hot"/><label>Hot</label>
+              <input type="radio" name="sort" id="top-radio" value="top"/><label>Top</label>
 
-          <p><label id="encrypt-label">Is The Username Encrypted?</label></p>
+              <p><label id="encrypt-label">Is The Username Encrypted?</label></p>
 
-          <input type="radio" id="encrypted" name="encryption" value="yes">
-          <label for="encrypted">Yes</label>
+              <input type="radio" id="encrypted" name="encryption" value="yes">
+              <label for="encrypted">Yes</label>
 
-          <input type="radio" id="notEncrypted" name="encryption" value="no">
-          <label for="notEncrypted">No</label>
+              <input type="radio" id="notEncrypted" name="encryption" value="no">
+              <label for="notEncrypted">No</label>
 
-          <br>
-          <br>
+              <br>
+              <br>
+              <button id="show-res-btn" type="submit">
+                  Click to view comments
+              </button>
+          </form>
 
-          <button id="show-res-btn" onclick="showComments()">
-              Click to view comments
-          </button>
       </div>
 
       <div id="table-div" style="grid-column: span 4; background-color: white; padding: 0px;" class="div-color">
