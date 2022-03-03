@@ -26,15 +26,15 @@ def getUserInput():
     comments = []
     column_names = []
     # check if page type requested is a subreddit or a user
-    if page_type == 'subredditPage':
+    if page_type == 'r/':
         column_names = ['Sentiment Value', 'Comment', 'Username']
         comments = reddit_connection.getSubredditComments(page_name, no_posts, post_sort_type)
-    elif page_type == 'usernamePage':
+    elif page_type == 'u/':
         column_names = ['Sentiment Value', 'Comment']
         comments = reddit_connection.getUserComments(is_encrypted, page_name, no_posts, post_sort_type)
 
     left_wing_dataset, right_wing_dataset = ml_model.predictComments(page_type, comments)
-    # comments = left_wing_dataset + right_wing_dataset
+
     return {'connection': 'Successful', 'column_names': column_names,
             'left_wing_dataset': left_wing_dataset, 'right_wing_dataset': right_wing_dataset}
 

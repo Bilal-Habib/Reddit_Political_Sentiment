@@ -325,39 +325,32 @@ def predictComments(page_type, comments):
                 # store and calculate sentiment value
                 sentiment_val = model.predict(padded_comments).tolist()[0][0]
                 # make sentiment value readable
-                readable_sentiment = getReadableSentiment(sentiment_val)
+                # readable_sentiment = getReadableSentiment(sentiment_val)
                 # if user chooses subreddit, we need to add author name
-                if page_type == 'subredditPage':
+                if page_type == 'r/':
                     author_name = encryptName(author_name)
                     if sentiment_val > 0.5:
-                        right_wing_dataset.append([readable_sentiment, comment_text, author_name])
+                        right_wing_dataset.append([sentiment_val, comment_text, author_name])
                     else:
-                        left_wing_dataset.append([readable_sentiment, comment_text, author_name])
+                        left_wing_dataset.append([sentiment_val, comment_text, author_name])
                 # if user chooses username, we don't need the author name
-                elif page_type == 'usernamePage':
+                elif page_type == 'u/':
                     if sentiment_val > 0.5:
-                        right_wing_dataset.append([readable_sentiment, comment_text])
+                        right_wing_dataset.append([sentiment_val, comment_text])
                     else:
-                        left_wing_dataset.append([readable_sentiment, comment_text])
+                        left_wing_dataset.append([sentiment_val, comment_text])
     return left_wing_dataset, right_wing_dataset
 
 
 # takes in sentiment value e.g 0.20
 # converts 0.0 to '100% Left Wing'
-def getReadableSentiment(value):
-    threshold = 0.5
-    unformatted_sentiment = (1 - value / threshold) * 100
-    # left_wing = False
-    # if value <= threshold:
-    #     left_wing = True
-    # round to 2 decimal places
-    rounded_value = ("{:.0f}".format(abs(unformatted_sentiment)))
-    readable_sentiment = str(rounded_value) + '%'
-    # if left_wing:
-    #     readable_sentiment = str(rounded_value) + '% Left Wing'
-    # else:
-    #     readable_sentiment = str(rounded_value) + '% Right Wing'
-    return readable_sentiment
+# def getReadableSentiment(value):
+#     threshold = 0.5
+#     unformatted_sentiment = (1 - value / threshold) * 100
+#     # round to 2 decimal places
+#     rounded_value = ("{:.0f}".format(abs(unformatted_sentiment)))
+#     readable_sentiment = str(rounded_value) + '%'
+#     return readable_sentiment
 
 
 if __name__ == '__main__':
