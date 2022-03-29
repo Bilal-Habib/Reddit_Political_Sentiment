@@ -8,24 +8,35 @@
     <title>Home Page</title>
     <meta name="description" content="A website that visualises political sentiment from Reddit">
 
+    <!--  Local CSS file  -->
     <link rel="stylesheet" href="../static/css/styles.css">
 
+    <!--  All JS Imports  -->
+    <!--  Line Chart Imports  -->
     <script type="text/javascript" src="https://cdn.pydata.org/bokeh/release/bokeh-1.3.4.min.js"></script>
     <script type="text/javascript" src="https://cdn.pydata.org/bokeh/release/bokeh-widgets-1.3.4.min.js"></script>
     <script type="text/javascript" src="https://cdn.pydata.org/bokeh/release/bokeh-tables-1.3.4.min.js"></script>
     <script type="text/javascript" src="https://cdn.pydata.org/bokeh/release/bokeh-gl-1.3.4.min.js"></script>
     <script type="text/javascript" src="https://cdn.pydata.org/bokeh/release/bokeh-api-1.3.4.min.js"></script>
     <script type="text/javascript" src="https://cdn.pydata.org/bokeh/release/bokeh-api-1.3.4.min.js"></script>
-
+    <!--  Pie Chart Import  -->
     <script src="https://canvasjs.com/assets/script/canvasjs.min.js"></script>
+    <!--  Ajax and jQuery Import  -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <!--  Local JS file  -->
     <script src="../static/js/scripts.js"></script>
-
 </head>
 
 <body>
-  <h1>Political Sentiment Analysis on Reddit</h1>
 
+  <h1>Analysis of Political Commentary on Reddit</h1>
+
+  <!-- Fading Alert Boxes -->
+  <div class="alert-box success">Comments Retrieved Successfully!</div>
+  <div class="alert-box failure">Error!, data could not be retrieved from flask server</div>
+  <div class="alert-box warning">Error 404, the page does not exist! please try again.</div>
+
+  <!-- section for options, pie chart and tables -->
   <section class="container">
 
       <div id="options-div" class="div-color">
@@ -36,21 +47,22 @@
               <input type="radio" name="page" id="usernamePage" value="u/"/><label>Username</label>
               <br>
               <br>
-              <input type="text" id="page-search" placeholder="E.g. LabourUK" required>
+              <input type="text" id="page-search" placeholder="E.g. for r/tories, type tories" required>
 
               <p><label id="amount-label">Enter Number of Posts</label></p>
-              <input type="text" id="no-posts" placeholder="E.g. 3" required>
+              <input type="number" id="no-posts" min="1" step="1" required>
+<!--              <input type="number" id="no-posts" min="1" max="50" step="1" required>-->
 
               <p>Select Sort Type</p>
               <input type="radio" name="sort" value="new"/><label>New</label>
               <input type="radio" name="sort" value="hot"/><label>Hot</label>
               <input type="radio" name="sort" id="top-radio" value="top"/><label>Top</label>
               <br>
+              <br>
               <button id="show-res-btn" type="submit">
-                  Click to view comments
+                  Click to view Comments
               </button>
           </form>
-
       </div>
 
       <div id="table-div" style="grid-column: span 4; background-color: white; padding: 0px;" class="div-color">
@@ -65,6 +77,12 @@
           <div id="loader" class="loader">Loading...</div>
       </div>
 
+  </section>
+
+<!-- section for line charts -->
+  <section class="container">
+      <div id="Left-line-div" style="grid-column: span 2; background-color: white; padding: 0px;" class="div-color"></div>
+      <div id="Right-line-div" style="grid-column: span 2; background-color: white; padding: 0px;" class="div-color"></div>
   </section>
 </body>
 </html>
