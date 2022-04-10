@@ -4,14 +4,17 @@ import app
 import ast
 
 
+folder = 'pickled_files/'
+
+
 def readFromFile(filename):
-    with open(filename, 'rb') as file:
+    with open(folder + filename, 'rb') as file:
         loaded_data = pickle.load(file)
     return loaded_data
 
 
 def writeToFile(filename, data):
-    with open(filename, 'wb') as file:
+    with open(folder + filename, 'wb') as file:
         pickle.dump(data, file)
 
 

@@ -16,6 +16,7 @@ password = data[3]
 # close file
 text_file.close()
 
+# create Praw Reddit instance
 reddit = praw.Reddit(
     client_id=CLIENT_ID,
     client_secret=SECRET_KEY,
@@ -25,6 +26,7 @@ reddit = praw.Reddit(
 )
 
 
+# function to fetch posts from subreddit
 def getSubredditPosts(page_name, no_posts, post_sort_type):
     subreddit = reddit.subreddit(page_name)
     if post_sort_type == 'new':
@@ -35,25 +37,33 @@ def getSubredditPosts(page_name, no_posts, post_sort_type):
         return subreddit.top(limit=no_posts)
 
 
-# gets comments from posts from specified subreddit
+# gets comments and replies from posts from specified subreddit
 def getSubredditComments(page_name, no_posts, post_sort_type):
     comment_sort_type = 'top'
     no_posts = int(no_posts)
     scraped_comments = []
+    # loop through posts
     for post in getSubredditPosts(page_name, no_posts, post_sort_type):
+        # gets a flat list of comments, removing MoreComments instance
         post.comments.replace_more(limit=0)
+        # set sort type
         post.comment_sort = comment_sort_type
+        # add comments to list
         scraped_comments += post.comments
     replies = getSubredditReplies(scraped_comments)
     all_comments = scraped_comments + replies
+    # returns comments and replies
     return all_comments
 
 
+# gets replies from comments
 def getSubredditReplies(comments):
     reply_sort_type = 'top'
     scraped_replies = []
     for comment in comments:
+        # set sort type
         comment.reply_sort = reply_sort_type
+        # check if comment has replies
         if len(comment.replies) > 0:
             for reply in comment.replies:
                 scraped_replies.append(reply)
@@ -63,8 +73,10 @@ def getSubredditReplies(comments):
 # gets comments made by a user
 def getUserComments(is_encrypted, reddit_username, no_comments, comment_sort_type):
     if is_encrypted == 'yes':
+        # decrypt username if encrypted
         reddit_username = helper.decryptName(reddit_username)
     scraped_comments = []
+    # get comments based on sort type
     if comment_sort_type == 'new':
         for comment in reddit.redditor(reddit_username).comments.new(limit=no_comments):
             scraped_comments.append(comment)

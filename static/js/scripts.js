@@ -82,6 +82,7 @@ function getUserInput() {
 }
 
 function showComments() {
+    $("#chartContainer").hide();
     $(".switch").hide();
 //  when page loads, remove previously created visualisations
     removeAllTables();
