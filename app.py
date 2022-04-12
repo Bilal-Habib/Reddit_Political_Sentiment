@@ -3,6 +3,7 @@ import reddit_connection as rc
 import ml_model
 import rsa
 
+
 app = Flask(__name__)
 # generate public and private key when app loads up
 public_key, private_key = rsa.newkeys(512)

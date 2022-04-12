@@ -7,8 +7,6 @@ from keras.models import Sequential
 from keras.layers import Dense, Embedding, GlobalAveragePooling1D, LSTM, Bidirectional
 from keras.preprocessing.text import Tokenizer
 from keras.preprocessing.sequence import pad_sequences
-from sklearn.feature_extraction.text import TfidfVectorizer
-from sklearn.metrics import accuracy_score
 # data processing imports
 import numpy as np
 import matplotlib.pyplot as plt
@@ -16,18 +14,11 @@ import regex
 import string
 from collections import Counter
 from random import seed, shuffle
-from sklearn.naive_bayes import MultinomialNB
-from sklearn.naive_bayes import GaussianNB
-
-import time
-from sklearn import svm
-from sklearn.metrics import classification_report
 
 
 # global variables
 seed(10)
 embedding_dim = 64
-max_length = 500
 trunc_type = 'post'
 padding_type = 'post'
 oov_tok = "<OOV>"
@@ -52,6 +43,15 @@ stop_words = {'i', 'me', 'my', 'myself', 'we', 'our', 'ours', 'ourselves', 'you'
               "hasn't", 'haven', "haven't", 'isn', "isn't", 'ma', 'mightn', "mightn't", 'mustn', "mustn't", 'needn',
               "needn't", 'shan', "shan't", 'shouldn', "shouldn't", 'wasn', "wasn't", 'weren', "weren't", 'won', "won't",
               'wouldn', "wouldn't"}
+
+to_del = ['no', 'nor', 'don', "don't", 'ain', 'aren', "aren't", 'couldn', "couldn't", 'didn', "didn't", 'doesn', "doesn't", 'hadn', "hadn't", 'hasn',
+              "hasn't", 'haven', "haven't", 'isn', "isn't", 'mightn', "mightn't", 'mustn', "mustn't", 'needn',
+              "needn't", 'shan', "shan't", 'shouldn', "shouldn't", 'wasn', "wasn't", 'weren', "weren't", 'won', "won't",
+              'wouldn', "wouldn't"]
+
+for elem in to_del:
+    # Remove element from the set
+    stop_words.discard(elem)
 
 
 def generateDatasets(no_posts):
@@ -128,9 +128,10 @@ def filterComment(comment):
     table = str.maketrans('', '', string.punctuation)
     stripped = [w.translate(table) for w in tokens]
     words = [word for word in stripped if word.isalpha()]
+    # print('STOPWORDS LENGTH:', len(stop_words))
     words = [w for w in words if w not in stop_words]
-    words = ' '.join(words)
-    return words
+    filtered_comment = ' '.join(words)
+    return filtered_comment
 
 
 # function that applies filter to every comment
@@ -145,52 +146,38 @@ def filterAllComments(all_comments):
 
 
 # function that retrieves the comments and labels separately
-# def getCommentsLabels(labelled_left, labelled_right):
-#     left_comments = []
-#     left_labels = []
-#     right_comments = []
-#     right_labels = []
-#
-#     for comment in labelled_left:
-#         left_comments.append(comment[0])
-#         left_labels.append(comment[1])
-#     for comment in labelled_right:
-#         right_comments.append(comment[0])
-#         right_labels.append(comment[1])
-#
-#     filtered_left = filterAllComments(left_comments)
-#     filtered_right = filterAllComments(right_comments)
-#
-#     combined_comments = []
-#     for comment in filtered_left:
-#         combined_comments.append([comment, 0])
-#     for comment in filtered_right:
-#         combined_comments.append([comment, 1])
-#
-#     # filter combined comments
-#     filtered_combined = [row for row in combined_comments if row[0] != '']
-#     print('length of filtered combined:', len(filtered_combined))
-#
-#     shuffle(filtered_combined)
-#
-#     comments = []
-#     labels = []
-#     # separate comments and labels
-#     for comment in filtered_combined:
-#         comments.append(comment[0])
-#         labels.append(comment[1])
-#
-#     return comments, labels
-
 def getCommentsLabels(labelled_left, labelled_right):
+    left_comments = []
+    left_labels = []
+    right_comments = []
+    right_labels = []
+
+    for comment in labelled_left:
+        left_comments.append(comment[0])
+        left_labels.append(comment[1])
+    for comment in labelled_right:
+        right_comments.append(comment[0])
+        right_labels.append(comment[1])
+
+    filtered_left = filterAllComments(left_comments)
+    filtered_right = filterAllComments(right_comments)
+
+    combined_comments = []
+    for comment in filtered_left:
+        combined_comments.append([comment, 0])
+    for comment in filtered_right:
+        combined_comments.append([comment, 1])
+
+    # filter combined comments
+    filtered_combined = [row for row in combined_comments if row[0] != '']
+    print('length of filtered combined:', len(filtered_combined))
+
+    shuffle(filtered_combined)
+
     comments = []
     labels = []
-
-    combined_comments = labelled_left + labelled_right
-    shuffle(combined_comments)
-
     # separate comments and labels
-    for comment in combined_comments:
+    for comment in filtered_combined:
         comments.append(comment[0])
         labels.append(comment[1])
 
@@ -213,6 +200,48 @@ def finalPreprocessing(left_wing, right_wing):
     # filter comments
     comments = filterAllComments(comments)
 
+    # train test split
+    n_comments = len(comments)
+    train_size = int(0.70 * n_comments)
+    training_comments, testing_comments = comments[:train_size], comments[train_size:]
+    training_labels, testing_labels = labels[:train_size], labels[train_size:]
+
+    # dictionary of words and their counter
+    counter = wordCounter(training_comments)
+
+    # number of unique words
+    num_unique_words = len(counter) + 2
+
+    # vectorise text corpus by turning each comment into a sequence of integers
+    tokenizer = Tokenizer(oov_token=oov_tok)
+    tokenizer.fit_on_texts(training_comments)
+
+    train_sequences = tokenizer.texts_to_sequences(training_comments)
+    val_sequences = tokenizer.texts_to_sequences(testing_comments)
+
+    max_length = max([len(x) for x in train_sequences])
+
+    # we want every sequence to have same length so we'll use padding
+    training_padded = pad_sequences(train_sequences, maxlen=max_length,
+                                    padding=padding_type, truncating=trunc_type)
+    val_padded = pad_sequences(val_sequences, maxlen=max_length,
+                               padding=padding_type, truncating=trunc_type)
+
+    # convert data np arrays for tensorflow v2.x
+    training_padded = np.asarray(training_padded)
+    training_labels = np.asarray(training_labels)
+    val_padded = np.asarray(val_padded)
+    testing_labels = np.asarray(testing_labels)
+
+    return [num_unique_words, training_padded, training_labels,
+            val_padded, testing_labels, max_length]
+def finalPreprocessing(left_wing, right_wing):
+    # set comments and labels
+    comments, labels = getCommentsLabels(left_wing, right_wing)
+
+    # filter comments
+    comments = filterAllComments(comments)
+
     # split both into training/testing (start with 80/20)
     n_comments = len(comments)
     train_size = int(0.70 * n_comments)
@@ -226,7 +255,7 @@ def finalPreprocessing(left_wing, right_wing):
     counter = wordCounter(training_comments)
 
     # number of unique words
-    num_unique_words = len(counter)
+    num_unique_words = len(counter) + 2
     print('num_unique_words:', num_unique_words)
 
     # vectorise text corpus by turning each comment into a sequence of integers
@@ -236,9 +265,11 @@ def finalPreprocessing(left_wing, right_wing):
     num_unique_words = len(tokenizer.word_index) + 1
     print('num_unique_words:', num_unique_words)
 
-    # he said change testing comments to val comments
     train_sequences = tokenizer.texts_to_sequences(training_comments)
     val_sequences = tokenizer.texts_to_sequences(testing_comments)
+
+    max_length = max([len(x) for x in train_sequences])
+    print('MAX LENGTH:', max_length)
 
     # we want every sequence to have same length so we'll use padding
     training_padded = pad_sequences(train_sequences, maxlen=max_length, padding=padding_type, truncating=trunc_type)
@@ -252,8 +283,7 @@ def finalPreprocessing(left_wing, right_wing):
 
     print("padded shape: ", training_padded.shape, val_padded.shape)
 
-    return [num_unique_words, training_padded, training_labels, val_padded, testing_labels]
-
+    return [num_unique_words, training_padded, training_labels, val_padded, testing_labels, max_length]
 
 # format data appropriately and generate ml model
 def createModel(left_wing, right_wing):
@@ -263,12 +293,12 @@ def createModel(left_wing, right_wing):
     training_labels = values[2]
     val_padded = values[3]
     testing_labels = values[4]
+    max_length = values[5]
 
     # create keras model
     model = Sequential()
     model.add(Embedding(num_unique_words, embedding_dim, input_length=max_length))
     model.add(GlobalAveragePooling1D())
-    # model.add(LSTM(16))
     model.add(Dense(32, activation="relu"))
     model.add(Dense(1, activation='sigmoid'))
 
@@ -276,9 +306,9 @@ def createModel(left_wing, right_wing):
     model.summary()
     train_model = model.fit(training_padded, training_labels, epochs=20,
                             validation_data=(val_padded, testing_labels), verbose=2)
-    # plotGraph(train_model, "accuracy")
-    # plotGraph(train_model, "loss")
-    # code to save model and tokenizer
+    plotGraph(train_model, "accuracy")
+    plotGraph(train_model, "loss")
+    # code to save model
     # model.save('model')
 
 
@@ -310,6 +340,10 @@ def predictComments(page_type, comments):
             if filtered_text != '':
                 # use tokenizer to tokenize comments
                 test_sequences = tokenizer.texts_to_sequences(filtered_text)
+
+                max_length = max([len(x) for x in test_sequences])
+                print('MAX TEST LENGTH:', max_length)
+
                 # pad comments
                 padded_comments = pad_sequences(test_sequences,
                                                 maxlen=max_length, padding=padding_type, truncating=trunc_type)
@@ -363,70 +397,6 @@ def getWordsIntersection(left_comments, right_comments):
     return intersection
 
 
-def naiveBayes(left_wing, right_wing):
-    # set comments and labels
-    comments, labels = getCommentsLabels(left_wing, right_wing)
-
-    # filter comments
-    comments = filterAllComments(comments)
-
-    # split both into training/testing (start with 80/20)
-    n_comments = len(comments)
-    train_size = int(0.70 * n_comments)
-    training_comments, testing_comments = comments[:train_size], comments[train_size:]
-    training_labels, testing_labels = labels[:train_size], labels[train_size:]
-
-    vectorizer = TfidfVectorizer(min_df=2)
-    train_term = vectorizer.fit_transform(training_comments)
-    test_term = vectorizer.transform(testing_comments)
-
-    model = MultinomialNB()
-    # model = GaussianNB()
-    model.fit(train_term, training_labels)
-    predictions_train = model.predict(train_term)
-    predictions_test = model.predict(test_term)
-    print('Train Accuracy:', accuracy_score(training_labels, predictions_train))
-    print('Test Accuracy:', accuracy_score(testing_labels, predictions_test))
-
-
-def createSvm(left_wing, right_wing):
-    # set comments and labels
-    comments, labels = getCommentsLabels(left_wing, right_wing)
-
-    # filter comments
-    comments = filterAllComments(comments)
-
-    # split both into training/testing (start with 80/20)
-    n_comments = len(comments)
-    train_size = int(0.80 * n_comments)
-    training_comments, testing_comments = comments[:train_size], comments[train_size:]
-    training_labels, testing_labels = labels[:train_size], labels[train_size:]
-
-    # Create feature vectors
-    vectorizer = TfidfVectorizer(min_df=2,
-                                 sublinear_tf=True,
-                                 use_idf=True)
-    train_vectors = vectorizer.fit_transform(training_comments)
-    test_vectors = vectorizer.transform(testing_comments)
-
-    # Perform classification with SVM, kernel=linear
-    model = svm.SVC(kernel='linear')
-    t0 = time.time()
-    model.fit(train_vectors, training_labels)
-    t1 = time.time()
-    prediction_linear = model.predict(test_vectors)
-    t2 = time.time()
-    time_linear_train = t1 - t0
-    time_linear_predict = t2 - t1
-    # results
-    print("Training time: %fs; Prediction time: %fs" % (time_linear_train, time_linear_predict))
-    print(classification_report(testing_labels, prediction_linear, output_dict=True))
-    predictions_train = model.predict(train_vectors)
-    predictions_test = model.predict(test_vectors)
-    print('Train Accuracy:', accuracy_score(training_labels, predictions_train))
-    print('Test Accuracy:', accuracy_score(testing_labels, predictions_test))
-
-
 if __name__ == '__main__':
     # generate data
     # generateDatasets(400)
@@ -436,6 +406,4 @@ if __name__ == '__main__':
     right_wing = helper.readFromFile(right_wing_file)[:45000]
 
     # create ml model from data
-    # createModel(left_wing, right_wing)
-    # naiveBayes(left_wing, right_wing)
-    createSvm(left_wing, right_wing)
+    createModel(left_wing, right_wing)
