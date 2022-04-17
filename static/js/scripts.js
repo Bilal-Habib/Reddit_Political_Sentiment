@@ -100,7 +100,8 @@ function showComments() {
         success: function (res) {
             if (res.connection == 'Successful') {
                 console.log(res)
-                processRedditData(res.column_names, res.left_wing_dataset, res.right_wing_dataset)
+                processRedditData(res.column_names,
+                    res.left_wing_dataset, res.right_wing_dataset)
                 successAlert();
                 console.log("Reddit data sent and received successfully!");
             } else if (res.connection == '404') {
@@ -191,7 +192,6 @@ function displayPieChart(left_comments, right_comments) {
             yValueFormatString: "##0.00\"%\"",
             showInLegend: "true",
             legendText: "{label}",
-//            indexLabelFontSize: 16,
             indexLabel: "{label} - {y}",
             dataPoints: [
                 {y: (no_left/total)*100, label: "Left-Wing"},
